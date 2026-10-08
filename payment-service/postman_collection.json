@@ -1,0 +1,527 @@
+{
+  "info": {
+    "name": "Payment Service - Sports Event Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:5004"
+    },
+    {
+      "key": "paymentId",
+      "value": "PAY-XXXXXXXXXX"
+    }
+  ],
+  "item": [
+    {
+      "name": "v1",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create payment (SUCCESS)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": \"BKG-101\",\n  \"event_id\": \"EVT-CRICKET-01\",\n  \"user_id\": \"U101\",\n  \"amount\": 450,\n  \"method\": \"UPI\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create payment (FAILED - over limit)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": \"BKG-102\",\n  \"event_id\": \"EVT-CRICKET-01\",\n  \"user_id\": \"U101\",\n  \"amount\": 50000,\n  \"method\": \"UPI\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create payment (simulated failure)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": \"BKG-103\",\n  \"event_id\": \"EVT-CRICKET-01\",\n  \"user_id\": \"U101\",\n  \"amount\": 450,\n  \"method\": \"UPI\",\n  \"simulate_failure\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "List payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get payment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Payments by booking",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/booking/BKG-101",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "booking",
+                "BKG-101"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Event collection summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/event/EVT-CRICKET-01/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "event",
+                "EVT-CRICKET-01",
+                "summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retry failed payment (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "{{paymentId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 900,\n  \"method\": \"CARD\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete payment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refund (Saga compensation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}/refund",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "{{paymentId}}",
+                "refund"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Delivery could not be arranged\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refund by booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/booking/BKG-101/refund",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "booking",
+                "BKG-101",
+                "refund"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Event cancelled\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Pending notifications (CB fallback)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/pending-notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "pending-notifications"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Circuit breaker status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/circuit-breaker/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "circuit-breaker",
+                "status"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "v2",
+      "item": [
+        {
+          "name": "Create payment v2 (Idempotency-Key)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "demo-key-1"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": \"BKG-201\",\n  \"event_id\": \"EVT-CRICKET-01\",\n  \"user_id\": \"U101\",\n  \"amount\": 118,\n  \"method\": \"UPI\",\n  \"currency\": \"INR\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create payment v2 - missing currency (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": \"BKG-202\",\n  \"event_id\": \"EVT-CRICKET-01\",\n  \"user_id\": \"U101\",\n  \"amount\": 450,\n  \"method\": \"UPI\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List v2 (filter + pagination)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments?status=SUCCESS&page=1&limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "SUCCESS"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get payment v2",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refund v2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/{{paymentId}}/refund",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "{{paymentId}}",
+                "refund"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Saga compensation\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
