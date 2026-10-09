@@ -4,7 +4,7 @@ One microservice of Team 17's Microservices Mini Project (**Sports Event Managem
 It handles payments for event bookings: spectator tickets and team or player registration fees.
 Built with Python + Flask + SQLite, as suggested in the project brief.
 
-**Owner:** Saurav Barnwal (PES1PG25CA191) — Payment Service
+ — Payment Service
 
 It follows the team contract in `docs/api-contracts.md`: Payment runs on **port 5004**, the Registry on **5000**
 (`/register`, `/discover/<name>`) and Notification on **5005**. A payment needs only `booking_id` and `amount`,
