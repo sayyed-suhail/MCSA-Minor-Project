@@ -387,8 +387,70 @@ def not_found(error):
 def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
+# ---------- Seat reservation (needed by Booking Service saga) ----------
+import requests as _requests
 
+def _ensure_seats(conn, event_id):
+    cols = [r["name"] for r in conn.execute("PRAGMA table_info(events)")]
+    if "available_seats" not in cols:
+        conn.execute("ALTER TABLE events ADD COLUMN available_seats INTEGER")
+    conn.execute("""UPDATE events SET available_seats =
+                    (SELECT capacity FROM venues WHERE venues.id = events.venue_id)
+                    WHERE id = ? AND available_seats IS NULL""", (event_id,))
+
+@app.route("/api/v1/events/<int:event_id>/reserve", methods=["POST"])
+def reserve_seats(event_id):
+    n = (request.get_json(silent=True) or {}).get("seats")
+    if not isinstance(n, int) or n <= 0:
+        return jsonify({"error": "seats must be a positive integer"}), 400
+    with get_connection() as conn:
+        if not conn.execute("SELECT id FROM events WHERE id=?", (event_id,)).fetchone():
+            return jsonify({"error": "Event not found"}), 404
+        _ensure_seats(conn, event_id)
+        cur = conn.execute("""UPDATE events SET available_seats = available_seats - ?
+                              WHERE id = ? AND available_seats >= ?""", (n, event_id, n))
+        if cur.rowcount == 0:
+            return jsonify({"error": "Not enough seats"}), 409
+        left = conn.execute("SELECT available_seats FROM events WHERE id=?",
+                            (event_id,)).fetchone()[0]
+    return jsonify({"message": "Seats reserved", "available_seats": left}), 200
+
+@app.route("/api/v1/events/<int:event_id>/release", methods=["POST"])
+def release_seats(event_id):
+    n = (request.get_json(silent=True) or {}).get("seats")
+    if not isinstance(n, int) or n <= 0:
+        return jsonify({"error": "seats must be a positive integer"}), 400
+    with get_connection() as conn:
+        if not conn.execute("SELECT id FROM events WHERE id=?", (event_id,)).fetchone():
+            return jsonify({"error": "Event not found"}), 404
+        _ensure_seats(conn, event_id)
+        conn.execute("""UPDATE events SET available_seats = MIN(available_seats + ?,
+                        (SELECT capacity FROM venues WHERE venues.id = events.venue_id))
+                        WHERE id = ?""", (n, event_id))
+        left = conn.execute("SELECT available_seats FROM events WHERE id=?",
+                            (event_id,)).fetchone()[0]
+    return jsonify({"message": "Seats released", "available_seats": left}), 200
+
+@app.route("/api/v1/events/<int:event_id>/seats", methods=["GET"])
+def get_seats(event_id):
+    with get_connection() as conn:
+        if not conn.execute("SELECT id FROM events WHERE id=?", (event_id,)).fetchone():
+            return jsonify({"error": "Event not found"}), 404
+        _ensure_seats(conn, event_id)
+        left = conn.execute("SELECT available_seats FROM events WHERE id=?",
+                            (event_id,)).fetchone()[0]
+    return jsonify({"event_id": event_id, "available_seats": left})
+
+def register_with_registry():
+    try:
+        _requests.post("http://127.0.0.1:5000/register",
+                       json={"name": "event-service", "url": "http://127.0.0.1:5002"},
+                       timeout=2)
+        print("Registered with service registry")
+    except Exception:
+        print("Registry not reachable yet")
 # -------------------- START SERVER --------------------
 
 if __name__ == "__main__":
+    register_with_registry()
     app.run(host="127.0.0.1", port=5002, debug=False)
