@@ -150,8 +150,8 @@ def get_user_v2(user_id):
 # ---------- Service Registry ----------
 def register_with_registry():
     try:
-        requests.post("http://localhost:5000/register",
-                      json={"name": "user-service", "url": "http://localhost:5001"},
+        requests.post("http://127.0.0.1:5000/register",
+                      json={"name": "user-service", "url": "http://127.0.0.1:5001"},
                       timeout=2)
         print("Registered with service registry")
     except Exception:
