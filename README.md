@@ -60,7 +60,7 @@ Examples:
 
 ### 3. Database per Service
 
-Each stateful microservice maintains its own SQLite database. The Service Registry uses in-memory storage, while the API Gateway and Notification Service do not maintain their own databases.
+The Service Registry uses in-memory storage, and the API Gateway does not maintain a database. All other services have their own SQLite database.
 
 ### 4. API Gateway
 
